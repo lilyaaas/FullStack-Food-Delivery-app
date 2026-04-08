@@ -23,7 +23,7 @@ export const authService = {
   },
 
   fetchUser: async () => {
-    const response = await api.get("/user");
+    const response = await api.get("/auth/check");
     return response.data;
   },
 };
