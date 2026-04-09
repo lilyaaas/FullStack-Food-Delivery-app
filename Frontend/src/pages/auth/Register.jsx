@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+
+import { useRegister } from "../../hooks/auth/useRegister";
 
 const Register = () => {
   // 1. State Management
@@ -9,6 +11,20 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  // Auth Hook
+  const { registerUser, isLoading } = useRegister();
+
+  // Form Submission Handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const onSuccess = () => navigate('/', { replace: true });
+
+    await registerUser({ name, email, password }, onSuccess);
+  };
 
   // Animation variants for staggered children
   const containerVariants = {
@@ -56,7 +72,7 @@ const Register = () => {
           </motion.div>
 
           {/* Form Container */}
-          <motion.form className="space-y-5" variants={itemVariants}>
+          <motion.form onSubmit={handleSubmit} className="space-y-5" variants={itemVariants}>
             {/* Full Name Input */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-on-surface-variant ml-1">
@@ -128,9 +144,24 @@ const Register = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className={`hover:cursor-pointer w-full py-5 mt-2 bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-lg rounded-xl shadow-[0_20px_40px_rgba(161,57,0,0.2)] transition-all duration-300 flex items-center justify-center gap-2`}
+              disabled={isLoading}
+              className={`w-full py-5 mt-2 bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-lg rounded-xl shadow-[0_20px_40px_rgba(161,57,0,0.2)] transition-all duration-300 flex items-center justify-center gap-2 ${
+                isLoading 
+                  ? "opacity-70 cursor-not-allowed" 
+                  : "hover:cursor-pointer hover:shadow-[0_25px_50px_rgba(161,57,0,0.3)] active:scale-[0.98]"
+              }`}
             >
-              Sign Up <ArrowRight className="w-6 h-6" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  Sign Up 
+                  <ArrowRight className="w-6 h-6" />
+                </>
+              )}
             </button>
           </motion.form>
 
