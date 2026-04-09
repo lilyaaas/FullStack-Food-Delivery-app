@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\RestaurantController;
 */
 
 // Authentication
+Route::get('/auth/check', [AuthController::class, 'check']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -40,9 +41,6 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     
     // User Profile & Logout
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
     Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
 

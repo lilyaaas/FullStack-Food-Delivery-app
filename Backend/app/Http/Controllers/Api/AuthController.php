@@ -7,31 +7,33 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // Check Authentication Status
+    public function check()
+    {
+        return response()->json([
+            'user' => Auth::user(),
+        ]);
+    }
+
     // User Registration (SPA Auth)
     public function register(Request $request)
     {
         // 1. Validate input
-        $validator = Validator::make($request->all(), [
+        $validator = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:customer,driver,restaurant_owner',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
         // 2. Create user
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'name'     => $validator['name'],
+            'email'    => $validator['email'],
+            'password' => Hash::make($validator['password']),
         ]);
 
         // Login the user immediately using Session guard
@@ -47,28 +49,25 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         // 1. Validate Input
-        $validator = Validator::make($request->all(), [
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
         // 2. Attempt to authenticate using the Session guard
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            // 3. If authentication fails
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+        if (!Auth::attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => ['Incorrect email or password.'],
+            ]);
         }
 
+        // 3. Regenerate session to prevent fixation
         $request->session()->regenerate();
 
+        // 4. Success Response
         return response()->json([
             'message' => 'Logged in successfully',
-            'user' => Auth::user()->only(['id','name','email','role', 'phone', 'avatar']),
+            'user' => Auth::user(),
         ], 200);
     }
 
