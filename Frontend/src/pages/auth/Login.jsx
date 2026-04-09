@@ -1,13 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+
+import { useLogin } from "../../hooks/auth/useLogin";
 
 const Login = () => {
   // State Management
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Router Hooks
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Auth Hook
+  const { login, isLoading } = useLogin();
+
+  // Form Submission Handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const onSuccess = () => {
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    };
+
+    // Pass the data and the success callback to the hook
+    await login({ email, password }, onSuccess);
+  };
 
   // Animation variants for staggered children
   const containerVariants = {
@@ -93,7 +115,7 @@ const Login = () => {
           </motion.div>
 
           {/* Form Container */}
-          <motion.form className="space-y-6" variants={itemVariants}>
+          <motion.form onSubmit={handleSubmit} className="space-y-6" variants={itemVariants}>
             {/* Email Input */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-on-surface-variant ml-1">
@@ -156,9 +178,24 @@ const Login = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              className="hover:cursor-pointer w-full py-5 bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-lg rounded-xl shadow-[0_20px_40px_rgba(161,57,0,0.2)] transition-all duration-300 flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className={`w-full py-5 bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-lg rounded-xl shadow-[0_20px_40px_rgba(161,57,0,0.2)] transition-all duration-300 flex items-center justify-center gap-2 ${
+                isLoading 
+                  ? "opacity-70 cursor-not-allowed" 
+                  : "hover:cursor-pointer hover:shadow-[0_25px_50px_rgba(161,57,0,0.3)] active:scale-[0.98]"
+              }`}
             >
-              Sign In <ArrowRight className="w-6 h-6" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  Sign In 
+                  <ArrowRight className="w-6 h-6" />
+                </>
+              )}
             </button>
           </motion.form>
 
