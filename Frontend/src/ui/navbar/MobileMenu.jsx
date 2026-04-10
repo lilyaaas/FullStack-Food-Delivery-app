@@ -13,20 +13,18 @@ const MobileMenu = ({
     <>
       {/* Mobile Toggle & Cart */}
       <div className="md:hidden flex items-center gap-4">
-        {user && !isLoading && (
-          <Link
-            to="/cart"
-            onClick={closeMenu}
-            className="relative p-2 text-on-surface"
-          >
-            <ShoppingCart className="w-6 h-6" />
-            {totalQuantity > 0 && (
-              <span className="absolute top-0 right-0 bg-primary-container text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {totalQuantity}
-              </span>
-            )}
-          </Link>
-        )}
+        <Link
+          to="/cart"
+          onClick={closeMenu}
+          className="relative p-2 text-on-surface"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          {totalQuantity > 0 && (
+            <span className="absolute top-0 right-0 bg-primary-container text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {totalQuantity}
+            </span>
+          )}
+        </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 text-on-surface hover:text-primary transition-colors focus:outline-none"
@@ -45,6 +43,13 @@ const MobileMenu = ({
           <div className="md:hidden absolute right-0 w-3/4 h-screen bg-white shadow-xl border-t border-outline-variant/10 flex flex-col py-4 px-6 space-y-4">
             <Link
               to="/"
+              onClick={closeMenu}
+              className="font-headline font-bold text-lg text-on-surface hover:text-primary"
+            >
+              Home
+            </Link>
+            <Link
+              to="/explore"
               onClick={closeMenu}
               className="font-headline font-bold text-lg text-on-surface hover:text-primary"
             >
