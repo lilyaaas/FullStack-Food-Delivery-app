@@ -20,19 +20,17 @@ export const useLogin = () => {
       if (onSuccess) onSuccess();
 
     } catch (error) {
+      console.clear();
       const status = error.response?.status;
       const message = error.response?.data?.message;
 
-      if (status === 401 || status === 404) {
+      if (status === 401 || status === 404 || status === 422) {
         toast.error(message);
         return;
       }
 
-      if (status !== 422) {
-        toast.error("Server error. Please try again later.");
-        return;
-      }
-
+      toast.error("Server error. Please try again later.");
+      
     } finally { setIsLoading(false) }
   };
 

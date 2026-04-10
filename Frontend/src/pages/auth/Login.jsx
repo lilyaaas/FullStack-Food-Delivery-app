@@ -23,7 +23,7 @@ const Login = () => {
     e.preventDefault();
     
     const onSuccess = () => {
-      const from = location.state?.from?.pathname || '/';
+      const from = location.state?.from || location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
     };
 
