@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
@@ -13,6 +13,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Auth Hook
   const { registerUser, isLoading } = useRegister();
@@ -21,7 +22,10 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const onSuccess = () => navigate('/', { replace: true });
+    const onSuccess = () => {
+      const from = location.state?.from || location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    };
 
     await registerUser({ name, email, password }, onSuccess);
   };

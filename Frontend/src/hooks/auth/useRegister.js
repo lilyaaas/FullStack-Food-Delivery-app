@@ -20,12 +20,15 @@ export const useRegister = () => {
       if (onSuccess) onSuccess();
       
     } catch (error) {
+      console.clear();
       const status = error.response?.status;
 
-      if (status !== 422) {
-        toast.error("Failed to create account. Please try again.");
+      if (status === 422) {
+        toast.error("Unable to complete registration with these credentials..");
         return;
       }
+
+      toast.error("Failed to create account. Please try again.");
       
     } finally { setIsLoading(false) }
   };
