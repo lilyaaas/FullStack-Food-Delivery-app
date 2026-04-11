@@ -9,7 +9,7 @@ const ProtectedRoute = () => {
 
   if (isLoading) return <LoadingSpinner LoadingText="Verifying Access... 🔐" />;
 
-  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) return <Navigate to="/" state={{ from: location }} replace />;
 
   return <Outlet />;
 };

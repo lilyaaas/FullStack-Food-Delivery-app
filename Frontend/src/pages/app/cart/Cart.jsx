@@ -21,7 +21,7 @@ const Cart = () => {
 
   const handleCheckout = () => {
     navigate(
-      user ? "/checkout" : "/login",
+      user ? "/checkout" : "/register",
       !user && { state: { from: "/checkout" } },
     );
   };
@@ -86,7 +86,7 @@ const Cart = () => {
                     {item.name}
                   </h3>
                   <button
-                    className="text-on-surface-variant hover:text-error transition-colors p-1 shrink-0"
+                    className="text-on-surface-variant hover:text-error transition-colors p-1 shrink-0 hover:cursor-pointer"
                     title="Remove item"
                   >
                     <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -104,13 +104,13 @@ const Cart = () => {
                   </span>
 
                   <div className="flex items-center bg-surface-container-low rounded-full px-1 sm:px-2 py-1 border border-outline-variant/20">
-                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors focus:outline-none">
+                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors focus:outline-none hover:cursor-pointer">
                       <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     <span className="px-2 sm:px-4 font-bold text-on-surface min-w-8 sm:min-w-10 text-center text-sm sm:text-base">
                       {item.quantity}
                     </span>
-                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary rounded-full transition-colors focus:outline-none">
+                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary rounded-full transition-colors focus:outline-none hover:cursor-pointer">
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
@@ -153,7 +153,7 @@ const Cart = () => {
 
             <button
               onClick={handleCheckout}
-              className="w-full py-4 bg-linear-to-br from-primary to-primary-container rounded-xl text-on-primary font-headline font-bold text-lg shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+              className="hover:cursor-pointer w-full py-4 bg-linear-to-br from-primary to-primary-container rounded-xl text-on-primary font-headline font-bold text-lg shadow-lg hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
             >
               Proceed to Checkout
               <ArrowRight className="w-5 h-5" />

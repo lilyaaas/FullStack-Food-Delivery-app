@@ -3,7 +3,7 @@ import { Zap, MapPin, Search, Star, ArrowRight } from "lucide-react";
 
 const Home = () => {
   return (
-    <div className="bg-background text-on-background antialiased selection:bg-primary-container selection:text-on-primary-container font-body">
+    <div className="bg-background text-on-background antialiased font-body">
       {/* HERO SECTION */}
       <section className="relative min-h-230.25 flex items-center overflow-hidden pt-12">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 items-center">
@@ -139,7 +139,7 @@ const Home = () => {
         <div className="flex items-end justify-between mb-12">
           <div>
             <h2 className="text-4xl font-black font-headline text-on-background tracking-tight mb-2">
-              Explore by Restaurant
+              Top Rated by Restaurant
             </h2>
             <p className="text-on-surface-variant">
               Hand-picked curated Restaurants for your appetite
