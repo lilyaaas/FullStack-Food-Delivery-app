@@ -5,6 +5,9 @@ import { MainLayout, AuthLayout } from "../layouts/index";
 import { Login, Register } from "../pages/auth/index";
 import Home from "../pages/public/Home";
 import Cart from "../pages/app/cart/Cart";
+import Checkout from "../pages/app/checkout/Checkout";
+import AllRestaurants from "../pages/app/restaurant/AllRestaurants"
+import Explore from "../pages/app/food/Explore";
 
 const AppRoutes = () => {
   return (
@@ -18,9 +21,13 @@ const AppRoutes = () => {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/restaurants" element={<AllRestaurants />} />
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}></Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/checkout" element={<Checkout />} />
+          </Route>
         </Route>
       </Routes>
     </div>
