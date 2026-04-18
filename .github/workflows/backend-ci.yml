@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Backend/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'Backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Backend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, bcmath
+        coverage: none
+
+    - run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - run: php artisan key:generate
+
+    - run: chmod -R 777 storage bootstrap/cache
+
+    - env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"
+      run: php artisan test
