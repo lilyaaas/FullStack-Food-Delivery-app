@@ -16,12 +16,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('address');
             $table->string('phone')->nullable();
+            $table->decimal('rating', 3, 2)->nullable();
             //  image URL
             $table->string('image')->nullable();
             // Operational details
             $table->decimal('min_order_price', 8, 2)->default(0);
-            $table->decimal('delivery_fee', 8, 2)->default(0);
-            $table->integer('delivery_time')->nullable();
             // Is the restaurant currently open?
             $table->boolean('is_open')->default(true);
             $table->timestamps();
