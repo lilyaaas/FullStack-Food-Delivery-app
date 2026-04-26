@@ -6,7 +6,8 @@ import { Login, Register } from "../pages/auth/index";
 import Home from "../pages/public/Home";
 import Cart from "../pages/app/cart/Cart";
 import Checkout from "../pages/app/checkout/Checkout";
-import AllRestaurants from "../pages/app/restaurant/AllRestaurants"
+import AllRestaurants from "../pages/app/restaurant/AllRestaurants";
+import RestaurantMenu from "../pages/app/restaurant/RestaurantMenu";
 import Explore from "../pages/app/food/Explore";
 
 const AppRoutes = () => {
@@ -23,6 +24,7 @@ const AppRoutes = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/restaurants" element={<AllRestaurants />} />
+          <Route path="/restaurant/:id" element={<RestaurantMenu />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
