@@ -2,16 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    use HasFactory;
+
+    protected $casts = [
+        'price' => 'float',
+    ];
+    
     protected $fillable = [
-        'restaurant_id', 
-        'category_id', 
-        'name', 
-        'description', 
-        'price', 
+        'restaurant_id',
+        'category_id',
+        'name',
+        'description',
+        'price',
         'image'
     ];
 

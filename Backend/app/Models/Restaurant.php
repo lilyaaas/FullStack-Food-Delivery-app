@@ -9,6 +9,11 @@ class Restaurant extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'min_order_price' => 'float',
+        'rating' => 'float',
+    ];
+
     protected $fillable = [
         'owner_id',
         'name',
