@@ -12,7 +12,7 @@ class RestaurantController extends Controller
     // 1. List all open restaurants
     public function index()
     {
-        $restaurants = Restaurant::where('is_open', true)->get(); //
+        $restaurants = Restaurant::where('is_open', true)->get(); // get all open restaurants
         return response()->json($restaurants);
     }
 
@@ -27,9 +27,9 @@ class RestaurantController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'description' => 'required|string',
             'address' => 'required|string',
             'min_order_price' => 'numeric|min:0',
-            'delivery_fee' => 'numeric|min:0',
             'phone' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',// max 2MB
         ]);
@@ -53,8 +53,6 @@ class RestaurantController extends Controller
             'phone' => $request->phone,
             'image' => $imagePath,
             'min_order_price' => $request->min_order_price ?? 0,
-            'delivery_fee' => $request->delivery_fee ?? 0,
-            'delivery_time' => $request->delivery_time,
         ]);
 
         return response()->json([
@@ -66,7 +64,7 @@ class RestaurantController extends Controller
     // 3. View a specific restaurant
     public function show($id)
     {
-        $restaurant = Restaurant::find($id);
+        $restaurant = Restaurant::with(['categories.products'])->find($id);
         
         if (!$restaurant) {
             return response()->json(['message' => 'Restaurant not found'], 404);
