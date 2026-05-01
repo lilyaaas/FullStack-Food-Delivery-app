@@ -22,6 +22,16 @@ class Product extends Model
         'image'
     ];
 
+    public function sides()
+    {
+        return $this->hasMany(Side::class);
+    }
+
+    public function addons()
+    {
+        return $this->hasMany(Addon::class);
+    }
+
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
