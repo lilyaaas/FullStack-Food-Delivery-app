@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Star, MapPin, Plus, Info } from "lucide-react";
 
 import { restaurantService } from "../../../services/restaurantService";
@@ -162,7 +162,8 @@ const RestaurantMenu = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
                     {category.products &&
                       category.products.map((product) => (
-                        <div
+                        <Link
+                          to={`/food/${product.id}`}
                           key={product.id}
                           className="group relative flex flex-col bg-surface-container-low rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-outline-variant/5"
                         >
@@ -214,7 +215,7 @@ const RestaurantMenu = () => {
                               </button>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                   </div>
                 </section>

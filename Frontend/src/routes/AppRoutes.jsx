@@ -9,6 +9,7 @@ import Checkout from "../pages/app/checkout/Checkout";
 import AllRestaurants from "../pages/app/restaurant/AllRestaurants";
 import RestaurantMenu from "../pages/app/restaurant/RestaurantMenu";
 import Explore from "../pages/app/food/Explore";
+import FoodPage from "../pages/app/food/FoodPage"
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
           <Route path="/explore" element={<Explore />} />
           <Route path="/restaurants" element={<AllRestaurants />} />
           <Route path="/restaurant/:id" element={<RestaurantMenu />} />
+          <Route path="/food/:id" element={<FoodPage />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
