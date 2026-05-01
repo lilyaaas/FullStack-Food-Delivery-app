@@ -14,7 +14,6 @@ class ProductController extends Controller
     // 1. List all products of a specific restaurant (Public)
     public function index($restaurant_id)
     {
-        //
         $products = Product::where('restaurant_id', $restaurant_id)
                             ->with('category') 
                             ->get();
@@ -76,7 +75,7 @@ class ProductController extends Controller
     // View a specific product
     public function show($id)
     {
-        $product = Product::with(['restaurant', 'category'])->find($id);
+        $product = Product::with(['restaurant', 'category', 'sides', 'addons'])->find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
