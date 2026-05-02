@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Trash2,
   Minus,
@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../../context/AuthContext";
+import { removeItem, incrementQuantity, decrementQuantity } from "../../../redux/slices/cartSlice";
 
 const Cart = () => {
-  // Redux state
+  // Redux state & dispatch
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   // Auth & Routing
   const { user } = useAuth();
@@ -22,7 +24,7 @@ const Cart = () => {
   const handleCheckout = () => {
     navigate(
       user ? "/checkout" : "/register",
-      !user && { state: { from: "/checkout" } },
+      !user ? { state: { from: "/checkout" } } : {},
     );
   };
 
@@ -65,59 +67,115 @@ const Cart = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Cart Items List */}
         <div className="lg:col-span-8 space-y-4 sm:space-y-6">
-          {cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-surface-container-lowest rounded-xl p-4 sm:p-6 flex flex-row gap-4 sm:gap-6 items-center group transition-all duration-300 hover:shadow-[0_20px_40px_rgba(75,36,9,0.08)] border border-outline-variant/10"
-            >
-              {/* Product Image */}
-              <div className="relative w-24 h-24 sm:w-40 sm:h-40 overflow-visible shrink-0">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-500 -mt-4 sm:-mt-10 shadow-lg"
-                />
-              </div>
+          {cartItems.map((item) => {
+            // Check if the item has customizations to display
+            const hasCustomizations =
+              item.selectedSide ||
+              (item.addons && Object.keys(item.addons).length > 0) ||
+              (item.specialInstructions &&
+                item.specialInstructions !== "Quick Add");
 
-              {/* Product Details */}
-              <div className="grow w-full">
-                <div className="flex justify-between items-start mb-1 sm:mb-2">
-                  <h3 className="font-headline text-lg sm:text-xl font-bold text-on-background line-clamp-1 sm:line-clamp-none pr-2">
-                    {item.name}
-                  </h3>
-                  <button
-                    className="text-on-surface-variant hover:text-error transition-colors p-1 shrink-0 hover:cursor-pointer"
-                    title="Remove item"
-                  >
-                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+            return (
+              <div
+                key={item.cartItemId}
+                className="bg-surface-container-lowest rounded-xl p-4 sm:p-6 flex flex-row gap-4 sm:gap-6 items-center group transition-all duration-300 hover:shadow-[0_20px_40px_rgba(75,36,9,0.08)] border border-outline-variant/10"
+              >
+                {/* Product Image */}
+                <div className="relative w-24 h-24 sm:w-40 sm:h-40 overflow-visible shrink-0">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-500 -mt-4 sm:-mt-10 shadow-lg"
+                  />
                 </div>
 
-                <p className="hidden sm:block text-on-surface-variant text-sm mb-4 leading-relaxed line-clamp-2">
-                  {item.description}
-                </p>
-
-                {/* Price & Controls */}
-                <div className="flex justify-between items-center mt-2 sm:mt-0">
-                  <span className="font-headline text-lg sm:text-xl font-extrabold text-primary">
-                    ${item.price.toFixed(2)}
-                  </span>
-
-                  <div className="flex items-center bg-surface-container-low rounded-full px-1 sm:px-2 py-1 border border-outline-variant/20">
-                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors focus:outline-none hover:cursor-pointer">
-                      <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                {/* Product Details */}
+                <div className="grow w-full">
+                  <div className="flex justify-between items-start mb-1 sm:mb-2">
+                    <h3 className="font-headline text-lg sm:text-xl font-bold text-on-background line-clamp-1 sm:line-clamp-none pr-2">
+                      {item.name}
+                    </h3>
+                    <button
+                      onClick={() => dispatch(removeItem(item.cartItemId))}
+                      className="text-on-surface-variant hover:text-red-500 transition-colors p-1 shrink-0 hover:cursor-pointer"
+                      title="Remove item"
+                    >
+                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
-                    <span className="px-2 sm:px-4 font-bold text-on-surface min-w-8 sm:min-w-10 text-center text-sm sm:text-base">
-                      {item.quantity}
+                  </div>
+
+                  {hasCustomizations && (
+                    <div className="mb-4 text-sm bg-surface-container-low p-3 rounded-lg text-on-surface-variant border border-outline-variant/10 flex flex-col gap-1.5">
+                      {/* Display the Side Name */}
+                      {item.selectedSideName && (
+                        <div className="flex items-start gap-2">
+                          <span className="font-bold text-on-background shrink-0">
+                            Side:
+                          </span>
+                          <span className="capitalize">
+                            {item.selectedSideName}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Display the Add-on Names */}
+                      {item.selectedAddonNames &&
+                        item.selectedAddonNames.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <span className="font-bold text-on-background shrink-0">
+                              Add-ons:
+                            </span>
+                            <span className="capitalize">
+                              {item.selectedAddonNames.join(", ")}
+                            </span>
+                          </div>
+                        )}
+
+                      {/* Display Special Instructions */}
+                      {item.specialInstructions &&
+                        item.specialInstructions !== "Quick Add" && (
+                          <div className="flex items-start gap-2 mt-1 pt-1 border-t border-outline-variant/10 italic text-on-surface-variant/80">
+                            <span className="font-bold not-italic text-on-background shrink-0">
+                              Note:
+                            </span>
+                            "{item.specialInstructions}"
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {/* Price & Controls */}
+                  <div className="flex justify-between items-center mt-2 sm:mt-0">
+                    <span className="font-headline text-lg sm:text-xl font-extrabold text-primary">
+                      ${item.price.toFixed(2)}
                     </span>
-                    <button className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary rounded-full transition-colors focus:outline-none hover:cursor-pointer">
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </button>
+
+                    <div className="flex items-center bg-surface-container-low rounded-full px-1 sm:px-2 py-1 border border-outline-variant/20">
+                      <button
+                        onClick={() =>
+                          dispatch(decrementQuantity(item.cartItemId))
+                        }
+                        className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-error rounded-full transition-colors focus:outline-none hover:cursor-pointer"
+                      >
+                        <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </button>
+                      <span className="px-2 sm:px-4 font-bold text-on-surface min-w-8 sm:min-w-10 text-center text-sm sm:text-base">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          dispatch(incrementQuantity(item.cartItemId))
+                        }
+                        className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary rounded-full transition-colors focus:outline-none hover:cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Right Column: Order Summary */}
