@@ -36,6 +36,7 @@ class OrderController extends Controller
             'items'         => 'required|array', // list of items
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
+            'items.*.price'      => 'required|numeric', // 👈 NEW: Expect the calculated price from React
         ]);
 
         if ($validator->fails()) {
@@ -45,28 +46,23 @@ class OrderController extends Controller
         // 2. Transactional Order Creation
         try {
             return DB::transaction(function () use ($request) {
-                
+
                 $totalAmount = 0;
                 $orderItemsData = []; // to store order items data
-                
-                // Get Restaurant details
+
                 $restaurant = Restaurant::findOrFail($request->restaurant_id);
 
-                // Loop through each item to calculate total
                 foreach ($request->items as $item) {
                     $product = Product::findOrFail($item['product_id']);
 
-                    // Ensure product belongs to the restaurant
                     if ($product->restaurant_id != $request->restaurant_id) {
-                         throw new \Exception("Product {$product->name} does not belong to this restaurant");
+                        throw new \Exception("Product {$product->name} does not belong to this restaurant");
                     }
 
-                    $price = $product->price;
+                    $price = $item['price'];
                     $quantity = $item['quantity'];
-                    
                     $totalAmount += ($price * $quantity);
 
-                    // Prepare order item data
                     $orderItemsData[] = [
                         'product_id' => $product->id,
                         'quantity'   => $quantity,
@@ -74,15 +70,12 @@ class OrderController extends Controller
                     ];
                 }
 
-                // Add delivery fee
                 $totalAmount += $restaurant->delivery_fee;
 
-                // Check minimum order price
                 if ($totalAmount < $restaurant->min_order_price) {
                     throw new \Exception("Order total is less than the minimum order price of {$restaurant->min_order_price}");
                 }
 
-                // Create Order
                 $order = Order::create([
                     'user_id'       => $request->user()->id,
                     'restaurant_id' => $request->restaurant_id,
@@ -92,7 +85,6 @@ class OrderController extends Controller
                     'status'        => 'pending',
                 ]);
 
-                // Create Order Items
                 foreach ($orderItemsData as $data) {
                     OrderItem::create([
                         'order_id'   => $order->id,
@@ -108,8 +100,6 @@ class OrderController extends Controller
                     'total_amount' => $totalAmount
                 ], 201);
             });
-
-        // 3. Error Handling
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -160,13 +150,13 @@ class OrderController extends Controller
 
         // 2. Get Orders for the Restaurant
         $orders = Order::where('restaurant_id', $restaurant->id)
-                        ->with(['user', 'items.product'])
-                        // Filter by status if provided
-                        ->when($request->status, function ($query, $status) {
-                            return $query->where('status', $status);
-                        })
-                        ->latest()
-                        ->paginate(10);
+            ->with(['user', 'items.product'])
+            // Filter by status if provided
+            ->when($request->status, function ($query, $status) {
+                return $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10);
 
         return response()->json($orders);
     }
