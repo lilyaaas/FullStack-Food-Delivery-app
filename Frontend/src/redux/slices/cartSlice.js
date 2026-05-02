@@ -10,67 +10,102 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    // 1. Add item to cart (or increase quantity if it already exists)
+    // 1. Add item to cart (or increase quantity if identical customization exists)
     addToCart: (state, action) => {
       const newItem = action.payload;
-      const existingItem = state.cartItems.find((item) => item.id === newItem.id);
 
-      state.totalAmount += newItem.price;
+      if (state.cartItems.length > 0) {
+        const currentRestaurantId = state.cartItems[0].restaurant_id;
+        if (currentRestaurantId !== newItem.restaurant_id) {
+          state.cartItems = [];
+          state.totalAmount = 0;
+          state.totalQuantity = 0;
+        }
+      }
+
+      // Generate a unique ID based on the exact customizations
+      const uniqueString = `${newItem.id}-${newItem.selectedSide}-${JSON.stringify(newItem.addons || {})}-${newItem.specialInstructions || ""}`;
+      const cartItemId = btoa(uniqueString);
+
+      const existingItem = state.cartItems.find(
+        (item) => item.cartItemId === cartItemId,
+      );
+
+      state.totalAmount += newItem.finalPrice * newItem.quantity;
+      state.totalQuantity += newItem.quantity;
 
       if (!existingItem) {
         state.cartItems.push({
+          cartItemId: cartItemId,
           id: newItem.id,
+          restaurant_id: newItem.restaurant_id,
           name: newItem.name,
           image: newItem.image,
-          price: newItem.price,
+          price: newItem.finalPrice,
+          basePrice: newItem.price,
+          quantity: newItem.quantity,
           description: newItem.description,
-          quantity: 1,
+          selectedSide: newItem.selectedSide,
+          selectedSideName: newItem.selectedSideName,
+          addons: newItem.addons,
+          selectedAddonNames: newItem.selectedAddonNames,
+          specialInstructions: newItem.specialInstructions,
         });
-        state.totalQuantity++;
       } else {
-        existingItem.quantity++;
+        existingItem.quantity += newItem.quantity;
       }
     },
 
     // 2. Remove entire item completely (Trash button)
     removeItem: (state, action) => {
-      const id = action.payload;
-      const existingItem = state.cartItems.find((item) => item.id === id);
+      const cartItemId = action.payload;
+      const existingItem = state.cartItems.find(
+        (item) => item.cartItemId === cartItemId,
+      );
 
       if (existingItem) {
-        state.totalQuantity--;
+        state.totalQuantity -= existingItem.quantity;
         state.totalAmount -= existingItem.price * existingItem.quantity;
 
-        // Filter it out of the array
-        state.cartItems = state.cartItems.filter((item) => item.id !== id);
+        state.cartItems = state.cartItems.filter(
+          (item) => item.cartItemId !== cartItemId,
+        );
+        if (state.cartItems.length === 0) state.totalAmount = 0;
       }
     },
 
     // 3. Increment a single item's quantity (+ button)
     incrementQuantity: (state, action) => {
-      const id = action.payload;
-      const existingItem = state.cartItems.find((item) => item.id === id);
+      const cartItemId = action.payload;
+      const existingItem = state.cartItems.find(
+        (item) => item.cartItemId === cartItemId,
+      );
 
       if (existingItem) {
         existingItem.quantity++;
+        state.totalQuantity++;
         state.totalAmount += existingItem.price;
       }
     },
 
     // 4. Decrement a single item's quantity (- button)
     decrementQuantity: (state, action) => {
-      const id = action.payload;
-      const existingItem = state.cartItems.find((item) => item.id === id);
+      const cartItemId = action.payload;
+      const existingItem = state.cartItems.find(
+        (item) => item.cartItemId === cartItemId,
+      );
 
       if (existingItem) {
+        state.totalQuantity--;
+        state.totalAmount -= existingItem.price;
         if (existingItem.quantity === 1) {
-          // If quantity is 1, decrementing should remove the item entirely
-          state.cartItems = state.cartItems.filter((item) => item.id !== id);
-          state.totalQuantity--;
+          state.cartItems = state.cartItems.filter(
+            (item) => item.cartItemId !== cartItemId,
+          );
+          if (state.cartItems.length === 0) state.totalAmount = 0;
         } else {
           existingItem.quantity--;
         }
-        state.totalAmount -= existingItem.price;
       }
     },
 
