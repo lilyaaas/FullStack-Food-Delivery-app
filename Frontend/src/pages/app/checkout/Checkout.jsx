@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Navigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import {
@@ -21,13 +21,15 @@ import {
 
 import { useAuth } from "../../../context/AuthContext";
 import { InputField, PaymentCard } from "../../../components/index";
-
+import { clearCart } from "../../../redux/slices/cartSlice";
+import { orderService } from "../../../services/orderService";
 
 const Checkout = () => {
   // 1. Hook into Redux & Context
   const { totalAmount, cartItems } = useSelector((state) => state.cart);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // State
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -57,16 +59,38 @@ const Checkout = () => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+
+    const { fullName, phone, address, city, zipCode } = formData;
+    if (!fullName || !phone || !address || !city || !zipCode) return;
+
+    const restaurantId = cartItems[0]?.restaurant_id;
+    if (!restaurantId) return;
+
     setIsProcessing(true);
 
     try {
-      // Simulating a network request
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      toast.success("Order placed successfully! 🎉");
-      // navigate('/order-success');
-      // dispatch(clearCart());
-    } catch {
-      toast.error("Failed to place order. Please try again.");
+      const orderPayload = {
+        restaurant_id: restaurantId,
+        address: `${address}, ${city} ${zipCode}`,
+        phone: phone,
+        items: cartItems.map((item) => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      };
+
+      const response = await orderService.placeOrder(orderPayload);
+
+      // Success — clear the cart and navigate
+      dispatch(clearCart());
+      toast.success(response.message);
+      navigate("/orders", { replace: true });
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      toast.error(message);
     } finally {
       setIsProcessing(false);
     }
@@ -243,7 +267,7 @@ const Checkout = () => {
                 </div>
 
                 {/* Scrolable Order List */}
-                <div className="max-h-[320px] overflow-y-auto pr-3 -mr-3 space-y-4 mb-8 custom-scrollbar">
+                <div className="max-h-80 overflow-y-auto pr-3 -mr-3 space-y-4 mb-8 custom-scrollbar">
                   {cartItems.map((item) => (
                     <div
                       key={item.id}
