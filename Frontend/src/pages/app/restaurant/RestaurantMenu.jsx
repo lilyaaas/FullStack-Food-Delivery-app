@@ -1,23 +1,28 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Star, MapPin, Plus, Info } from "lucide-react";
 
 import { restaurantService } from "../../../services/restaurantService";
 import { getImageUrl } from "../../../utils/ImageConfig";
+import { addToCart, clearCart } from "../../../redux/slices/cartSlice";
 import LoadingSpinner from "../../../ui/loading/LoadingSpinner";
-import { addToCart } from "../../../redux/slices/cartSlice";
+import Modal from "../../../components/Modal";
 
 const RestaurantMenu = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { cartItems } = useSelector((state) => state.cart);
+
   // states
   const [restaurant, setRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingItem, setPendingItem] = useState(null);
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -46,9 +51,35 @@ const RestaurantMenu = () => {
     }
   };
 
-  const handleQuickAdd = (item) => {
-    dispatch(addToCart(item));
-    toast.success(`${item.name} added to cart! 🍔`);
+  const handleQuickAdd = (e, item) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (
+      restaurant &&
+      cartItems.length > 0 &&
+      cartItems[0].restaurant_id !== restaurant.id
+    ) {
+      setPendingItem(item);
+      setIsModalOpen(true);
+      return;
+    }
+
+    proceedToCart(item);
+  };
+
+  const proceedToCart = (item) => {
+    const orderItem = {
+      ...item,
+      quantity: 1,
+      finalPrice: item.price,
+      selectedSide: "",
+      addons: {},
+      specialInstructions: "Quick Add",
+    };
+
+    dispatch(addToCart(orderItem));
+    toast.success(`${item.name} added to cart!`);
   };
 
   if (isLoading) return <LoadingSpinner LoadingText="Preparing the menu..." />;
@@ -192,7 +223,7 @@ const RestaurantMenu = () => {
                                 {product.name}
                               </h3>
                               <span className="text-on-surface-variant font-bold text-sm bg-surface-container-low px-2 py-1 rounded-md">
-                                {product.time}
+                                {product.time || "20m"}
                               </span>
                             </div>
                             <p className="text-on-surface-variant text-sm font-medium mb-4">
@@ -207,8 +238,8 @@ const RestaurantMenu = () => {
 
                               {/* Add to Cart Button */}
                               <button
-                                onClick={() => handleQuickAdd(product)}
-                                className="bg-surface-container-high text-primary p-2.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors active:scale-90 cursor-pointer"
+                                onClick={(e) => handleQuickAdd(e, product)}
+                                className="bg-surface-container-high text-primary p-2.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors active:scale-90 cursor-pointer z-10"
                                 title="Quick Add Featured Item"
                               >
                                 <Plus className="w-5 h-5" />
@@ -234,6 +265,24 @@ const RestaurantMenu = () => {
           )}
         </div>
       </div>
+
+      {/* The Warning Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPendingItem(null);
+        }}
+        title="Start a new order?"
+        message="Your cart contains items from a different restaurant. Adding this item will clear your current cart. Do you want to proceed?"
+        confirmText="Clear Cart & Add"
+        onConfirm={() => {
+          dispatch(clearCart());
+          setIsModalOpen(false);
+          proceedToCart(pendingItem);
+          setPendingItem(null);
+        }}
+      />
     </main>
   );
 };
