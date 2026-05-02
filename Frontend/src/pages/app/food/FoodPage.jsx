@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Star, Flame, Clock, Plus, Minus } from "lucide-react";
+import { Star, Clock, Plus, Minus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import { productService } from "../../../services/productService";
 import { getImageUrl } from "../../../utils/ImageConfig";
+import { addToCart, clearCart } from "../../../redux/slices/cartSlice";
 import LoadingSpinner from "../../../ui/loading/LoadingSpinner";
+import Modal from "../../../components/Modal";
 
 const FoodPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { cartItems } = useSelector((state) => state.cart);
 
   // State
   const [product, setProduct] = useState(null);
@@ -16,6 +23,7 @@ const FoodPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSide, setSelectedSide] = useState("");
   const [addons, setAddons] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch Data
   useEffect(() => {
@@ -67,7 +75,39 @@ const FoodPage = () => {
   }
 
   const totalPrice = (basePrice * quantity).toFixed(2);
-  const handleAddToCart = () => {};
+  const handleAddToCart = () => {
+    if (
+      cartItems.length > 0 &&
+      cartItems[0].restaurant_id !== product.restaurant_id
+    ) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    proceedToCart();
+  };
+
+  const proceedToCart = () => {
+    const sideObj = product.sides?.find((s) => s.id === selectedSide);
+
+    const orderItem = {
+      ...product,
+      quantity,
+      selectedSide,
+      selectedSideName: sideObj ? sideObj.name : "",
+      addons,
+      selectedAddonNames:
+        product.addons
+          ?.filter((addon) => addons[addon.id])
+          .map((addon) => addon.name) || [],
+      finalPrice: parseFloat(totalPrice),
+      specialInstructions: "",
+    };
+
+    // Add to Redux
+    dispatch(addToCart(orderItem));
+    toast.success(`${product.name} added to cart!`);
+  };
 
   return (
     <div className="bg-background text-on-background font-body min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container flex flex-col">
@@ -274,6 +314,20 @@ const FoodPage = () => {
             </div>
           </div>
         </section>
+
+        {/* The Warning Modal */}
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Start a new order?"
+          message="Your cart contains items from a different restaurant. Adding this item will clear your current cart. Do you want to proceed?"
+          confirmText="Clear Cart & Add"
+          onConfirm={() => {
+            dispatch(clearCart());
+            setIsModalOpen(false);
+            proceedToCart();
+          }}
+        />
       </main>
     </div>
   );
