@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Orders (Place Order)
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);// Get user orders (My Orders)
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
     Route::get('/restaurant/orders', [OrderController::class, 'getRestaurantOrders']);
 });

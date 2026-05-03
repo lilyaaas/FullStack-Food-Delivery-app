@@ -13,6 +13,33 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+    // Generate a dynamic status message based on order status
+    private function getStatusMessage(string $status, Order $order)
+    {
+        $restaurantName = $order->restaurant->name ?? 'the restaurant';
+        $num = $order->order_number;
+
+        return match ($status) {
+            'pending'   => "Your order #{$num} has been successfully placed.",
+            'accepted'  => "Your order from {$restaurantName} has been received and is being prepared with kinetic precision.",
+            'preparing' => "The chefs at {$restaurantName} are crafting your order #{$num} right now. Hang tight!",
+            'on_way'    => "Your order #{$num} from {$restaurantName} is on its way to you. Get ready!",
+            'delivered'  => "Your order #{$num} from {$restaurantName} has been delivered. Enjoy your meal!",
+            'cancelled' => "Your order #{$num} from {$restaurantName} has been cancelled.",
+            default     => "Your order #{$num} is being processed.",
+        };
+    }
+
+    // Generate a unique order reference
+    private function generateReference()
+    {
+        do {
+            $ref = 'QF-' . strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+        } while (Order::where('reference', $ref)->exists());
+
+        return $ref;
+    }
+
     // Get user orders (My Orders)
     public function index(Request $request)
     {
@@ -23,6 +50,23 @@ class OrderController extends Controller
             ->paginate(10);
 
         return response()->json($orders);
+    }
+
+    // Show a single order with its status & message
+    public function show(Request $request, $id)
+    {
+        $order = Order::with(['restaurant', 'items.product'])
+            ->where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        return response()->json([
+            'order' => $order,
+        ]);
     }
 
     // Place a new Order
@@ -36,7 +80,8 @@ class OrderController extends Controller
             'items'         => 'required|array', // list of items
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
-            'items.*.price'      => 'required|numeric', // 👈 NEW: Expect the calculated price from React
+            'items.*.price'      => 'required|numeric',
+            'payment_method'     => 'required|in:cash,card,paypal',
         ]);
 
         if ($validator->fails()) {
@@ -76,13 +121,23 @@ class OrderController extends Controller
                     throw new \Exception("Order total is less than the minimum order price of {$restaurant->min_order_price}");
                 }
 
+                $orderNumber = Order::where('user_id', $request->user()->id)->count() + 1;
+
                 $order = Order::create([
-                    'user_id'       => $request->user()->id,
-                    'restaurant_id' => $request->restaurant_id,
-                    'total_amount'  => $totalAmount,
-                    'address'       => $request->address,
-                    'phone'         => $request->phone,
-                    'status'        => 'pending',
+                    'user_id'        => $request->user()->id,
+                    'restaurant_id'  => $request->restaurant_id,
+                    'order_number'   => $orderNumber,
+                    'reference'      => $this->generateReference(),
+                    'total_amount'   => $totalAmount,
+                    'address'        => $request->address,
+                    'phone'          => $request->phone,
+                    'payment_method' => $request->payment_method,
+                    'status'         => 'pending',
+                ]);
+
+                // Set the initial status message
+                $order->update([
+                    'message' => $this->getStatusMessage('pending', $order),
                 ]);
 
                 foreach ($orderItemsData as $data) {
@@ -95,9 +150,14 @@ class OrderController extends Controller
                 }
 
                 return response()->json([
-                    'message' => 'Order placed successfully',
-                    'order_id' => $order->id,
-                    'total_amount' => $totalAmount
+                    'message'        => 'Order placed successfully',
+                    'order_id'       => $order->id,
+                    'order_number'   => $order->order_number,
+                    'reference'      => $order->reference,
+                    'total_amount'   => $totalAmount,
+                    'status'         => $order->status,
+                    'payment_method' => $order->payment_method,
+                    'order_message'  => $order->message,
                 ], 201);
             });
         } catch (\Exception $e) {
@@ -129,12 +189,18 @@ class OrderController extends Controller
             return response()->json(['message' => 'Unauthorized. Only the restaurant owner can update the status.'], 403);
         }
 
-        // 4. Update Status
-        $order->update(['status' => $request->status]);
+        // 4. Update Status & Message together
+        $newMessage = $this->getStatusMessage($request->status, $order);
+
+        $order->update([
+            'status'  => $request->status,
+            'message' => $newMessage,
+        ]);
 
         return response()->json([
-            'message' => 'Order status updated successfully',
-            'status' => $order->status
+            'message'       => 'Order status updated successfully',
+            'status'        => $order->status,
+            'order_message' => $order->message,
         ]);
     }
 
