@@ -11,10 +11,14 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'restaurant_id',
+        'order_number',
+        'reference',
         'total_amount',
         'status',
+        'message',
         'address',
-        'phone'
+        'phone',
+        'payment_method',
     ];
 
     public function items()
