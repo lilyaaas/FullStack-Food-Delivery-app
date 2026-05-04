@@ -192,10 +192,6 @@ const Cart = () => {
                   ${totalAmount.toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between items-center text-on-surface-variant">
-                <span className="font-medium">Delivery Fee</span>
-                <span className="text-on-background font-semibold">$0.00</span>
-              </div>
             </div>
 
             <div className="pt-6 mb-8 bg-surface-container-low rounded-xl p-4 border border-outline-variant/20">
