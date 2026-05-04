@@ -37,8 +37,8 @@ const Checkout = () => {
 
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
-    phone: "",
-    address: "",
+    phone: user?.phone || "",
+    address: user?.address || "",
     city: "",
     zipCode: "",
   });
@@ -61,7 +61,7 @@ const Checkout = () => {
     e.preventDefault();
 
     const { fullName, phone, address, city, zipCode } = formData;
-    if (!fullName || !phone || !address || !city || !zipCode) return;
+    if (!fullName || !phone || !address) return;
 
     const restaurantId = cartItems[0]?.restaurant_id;
     if (!restaurantId) return;
@@ -71,21 +71,25 @@ const Checkout = () => {
     try {
       const orderPayload = {
         restaurant_id: restaurantId,
-        address: `${address}, ${city} ${zipCode}`,
+        address: `${address} ${city} ${zipCode}`,
         phone: phone,
         items: cartItems.map((item) => ({
           product_id: item.id,
           quantity: item.quantity,
           price: item.price,
         })),
+        payment_method: paymentMethod,
       };
 
       const response = await orderService.placeOrder(orderPayload);
 
       // Success — clear the cart and navigate
-      dispatch(clearCart());
+      navigate(`/order-success/${response.order_id}`);
+      setTimeout(() => {
+        dispatch(clearCart());
+      }, 1000);
       toast.success(response.message);
-      navigate("/orders", { replace: true });
+
     } catch (error) {
       const message =
         error.response?.data?.message ||
@@ -184,7 +188,6 @@ const Checkout = () => {
                   onChange={handleInputChange}
                   placeholder="New York"
                   type="text"
-                  required
                 />
                 <InputField
                   icon={Hash}
@@ -194,7 +197,6 @@ const Checkout = () => {
                   onChange={handleInputChange}
                   placeholder="10001"
                   type="text"
-                  required
                 />
               </div>
             </div>
