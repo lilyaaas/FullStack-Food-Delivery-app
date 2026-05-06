@@ -52,6 +52,35 @@ class OrderController extends Controller
         return response()->json($orders);
     }
 
+    // Search user orders by reference, restaurant name, or product name
+    public function search(Request $request)
+    {
+        $query = $request->query('q', '');
+        $status = $request->query('status');
+
+        $orders = Order::where('user_id', $request->user()->id)
+            ->with(['restaurant', 'items.product'])
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($sub) use ($query) {
+                    $sub->where('reference', 'LIKE', "%{$query}%")
+                        ->orWhereHas('restaurant', function ($r) use ($query) {
+                            $r->where('name', 'LIKE', "%{$query}%");
+                        })
+                        ->orWhereHas('items.product', function ($p) use ($query) {
+                            $p->where('name', 'LIKE', "%{$query}%");
+                        });
+                });
+            })
+            ->when($status, function ($q, $status) {
+                $statuses = explode(',', $status);
+                $q->whereIn('status', $statuses);
+            })
+            ->latest()
+            ->paginate(10);
+
+        return response()->json($orders);
+    }
+
     // Show a single order with its status & message
     public function show(Request $request, $id)
     {
