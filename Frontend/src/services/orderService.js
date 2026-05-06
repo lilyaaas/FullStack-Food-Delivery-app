@@ -13,6 +13,15 @@ export const orderService = {
     return response.data;
   },
 
+  // Search orders by query text and optional status filter
+  searchOrders: async (query = "", status = "") => {
+    const params = {};
+    if (query) params.q = query;
+    if (status) params.status = status;
+    const response = await api.get("/search", { params });
+    return response.data;
+  },
+
   // Get order details (status + message)
   getOrderDetails: async (orderId) => {
     const response = await api.get(`/orders/${orderId}`);
