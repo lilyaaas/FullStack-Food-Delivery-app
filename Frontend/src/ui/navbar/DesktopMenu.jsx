@@ -2,16 +2,19 @@ import { Link, NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
 const DesktopMenu = ({ user, isLoading, totalQuantity }) => {
+
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/explore", label: "Explore" },
+    { to: "/restaurants", label: "Restaurants" },
+    { to: "/orders", label: "My Orders" },
+  ];
+
   return (
     <>
       {/* Links */}
       <div className="hidden md:flex items-center gap-8">
-        {[
-          { to: "/", label: "Home" },
-          { to: "/explore", label: "Explore" },
-          { to: "/offers", label: "Offers" },
-          { to: "/restaurants", label: "Restaurants" },
-        ].map((link) => (
+        {navLinks.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
@@ -41,6 +44,7 @@ const DesktopMenu = ({ user, isLoading, totalQuantity }) => {
             </span>
           )}
         </Link>
+
         {isLoading ? (
           <div className="w-24 h-10 bg-surface-container-high animate-pulse rounded-full"></div>
         ) : user ? (
@@ -67,6 +71,7 @@ const DesktopMenu = ({ user, isLoading, totalQuantity }) => {
             >
               Sign In
             </Link>
+
             <Link
               to="/register"
               className="px-6 py-2.5 rounded-full bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 transition-transform duration-300"

@@ -25,6 +25,7 @@ const MobileMenu = ({
             </span>
           )}
         </Link>
+
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 text-on-surface hover:text-primary transition-colors focus:outline-none"
@@ -56,11 +57,11 @@ const MobileMenu = ({
               Explore
             </Link>
             <Link
-              to="/offers"
+              to="/orders"
               onClick={closeMenu}
               className="font-headline font-bold text-lg text-on-surface hover:text-primary"
             >
-              Offers
+              My orders
             </Link>
             <Link
               to="/restaurants"
