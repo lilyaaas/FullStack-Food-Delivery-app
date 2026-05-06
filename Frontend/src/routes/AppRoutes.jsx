@@ -11,6 +11,7 @@ import RestaurantMenu from "../pages/app/restaurant/RestaurantMenu";
 import Explore from "../pages/app/food/Explore";
 import FoodPage from "../pages/app/food/FoodPage"
 import OrderSuccess from "../pages/app/order/OrderSuccess";
+import OrderHistory from "../pages/app/order/OrderHistory";
 
 const AppRoutes = () => {
   return (
@@ -33,6 +34,7 @@ const AppRoutes = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success/:id" element={<OrderSuccess />} />
+            <Route path="/orders" element={<OrderHistory />} />
           </Route>
         </Route>
       </Routes>
