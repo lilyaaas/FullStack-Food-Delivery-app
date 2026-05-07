@@ -184,7 +184,7 @@ const OrderHistory = () => {
                         {order.restaurant?.name}
                       </h3>
                       <p className="text-sm text-on-surface-variant font-medium mt-1">
-                        {formatDate(order.created_at)} • {order.reference}
+                        {formatDate(order.created_at, "full")} • {order.reference}
                       </p>
                     </div>
                     {getStatusBadge(order.status)}
