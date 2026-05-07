@@ -9,9 +9,10 @@ import Checkout from "../pages/app/checkout/Checkout";
 import AllRestaurants from "../pages/app/restaurant/AllRestaurants";
 import RestaurantMenu from "../pages/app/restaurant/RestaurantMenu";
 import Explore from "../pages/app/food/Explore";
-import FoodPage from "../pages/app/food/FoodPage"
+import FoodPage from "../pages/app/food/FoodPage";
 import OrderSuccess from "../pages/app/order/OrderSuccess";
 import OrderHistory from "../pages/app/order/OrderHistory";
+import Settings from "../pages/app/profile/user/Settings";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const AppRoutes = () => {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success/:id" element={<OrderSuccess />} />
             <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
       </Routes>
