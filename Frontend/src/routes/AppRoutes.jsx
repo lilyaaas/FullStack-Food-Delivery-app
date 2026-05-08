@@ -12,7 +12,7 @@ import Explore from "../pages/app/food/Explore";
 import FoodPage from "../pages/app/food/FoodPage";
 import OrderSuccess from "../pages/app/order/OrderSuccess";
 import OrderHistory from "../pages/app/order/OrderHistory";
-import Settings from "../pages/app/profile/user/Settings";
+import Settings from "../pages/app/settings/user/Settings";
 
 const AppRoutes = () => {
   return (
