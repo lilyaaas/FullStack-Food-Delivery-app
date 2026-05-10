@@ -41,7 +41,9 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     
     // User Profile & Logout
-    Route::post('/user/update', [UserController::class, 'update']);
+    Route::get('/user', [UserController::class, 'profile']);
+    Route::post('/user/update', [UserController::class, 'updateProfile']);
+    Route::post('/user/password', [UserController::class, 'updatePassword']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Restaurant Management (Create)
