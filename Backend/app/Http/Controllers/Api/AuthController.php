@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -23,41 +23,59 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         // 1. Validate input
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $validated = $validator->validated();
+
         // 2. Create user
         $user = User::create([
-            'name'     => $validator['name'],
-            'email'    => $validator['email'],
-            'password' => Hash::make($validator['password']),
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         // Login the user immediately using Session guard
         Auth::login($user);
 
         return response()->json([
+            'success' => true,
             'message' => 'Account created successfully',
             'user' => $user->only(['id', 'name', 'email', 'role', 'phone', 'avatar']),
-        ], 201);
+        ]);
     }
 
     // User Login (SPA Auth)
     public function login(Request $request)
     {
         // 1. Validate Input
-        $credentials = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
         // 2. Attempt to authenticate using the Session guard
-        if (!Auth::attempt($credentials)) {
-            throw ValidationException::withMessages([
-                'email' => ['Incorrect email or password.'],
+        if (!Auth::attempt($validator->validated())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect email or password.',
             ]);
         }
 
@@ -66,9 +84,10 @@ class AuthController extends Controller
 
         // 4. Success Response
         return response()->json([
+            'success' => true,
             'message' => 'Logged in successfully',
             'user' => Auth::user(),
-        ], 200);
+        ]);
     }
 
     // User Logout (SPA Auth)
@@ -82,7 +101,8 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json([
-            'message' => 'Logged out successfully'
-        ], 200);
+            'success' => true,
+            'message' => 'Logged out successfully',
+        ]);
     }
 }
