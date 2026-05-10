@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarDays,
   LogOut,
@@ -17,6 +17,7 @@ import { useLogout } from "../hooks/auth/useLogout";
 import { getImageUrl } from "../utils/ImageConfig";
 import { formatDate } from "../utils/helpers";
 import { Modal } from "../components/index";
+import { useSettings } from "../hooks/useSettings";
 
 // Reusable Sidebar Button Component
 const SidebarButton = ({ id, icon: Icon, label, activeTab, onTabClick }) => (
@@ -43,6 +44,7 @@ const SettingsLayout = ({ children, activeTab, setActiveTab }) => {
 
   const { user } = useAuth();
   const { logout } = useLogout();
+  const { getProfile } = useSettings();
 
   // Define the sidebar buttons with their respective icons and labels
   const sidebarButtons = [
@@ -52,6 +54,10 @@ const SettingsLayout = ({ children, activeTab, setActiveTab }) => {
     { id: "notifications", icon: Bell, label: "Notifications" },
     { id: "security", icon: ShieldCheck, label: "Security" },
   ];
+
+  useEffect(() => {
+    getProfile();
+  }, [getProfile]);
 
   const handleTabClick = (id) => {
     setActiveTab(id);
