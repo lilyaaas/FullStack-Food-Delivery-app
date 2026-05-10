@@ -12,26 +12,21 @@ export const useLogin = () => {
     setIsLoading(true);
 
     try {
-      const { message, user } = await authService.login(credentials);
+      const { success, message, user } = await authService.login(credentials);
 
-      setUser(user);
-      toast.success(message);
-
-      if (onSuccess) onSuccess();
-
-    } catch (error) {
-      console.clear();
-      const status = error.response?.status;
-      const message = error.response?.data?.message;
-
-      if (status === 401 || status === 404 || status === 422) {
+      if (!success) {
         toast.error(message);
         return;
       }
 
+      setUser(user);
+      toast.success(message);
+      if (onSuccess) onSuccess();
+    } catch {
       toast.error("Server error. Please try again later.");
-      
-    } finally { setIsLoading(false) }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return { login, isLoading };

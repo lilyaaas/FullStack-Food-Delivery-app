@@ -12,25 +12,21 @@ export const useRegister = () => {
     setIsLoading(true);
 
     try {
-      const { user, message } = await authService.register(userData);
+      const { success, message, user } = await authService.register(userData);
 
-      setUser(user);
-      toast.success(message);
-
-      if (onSuccess) onSuccess();
-      
-    } catch (error) {
-      console.clear();
-      const status = error.response?.status;
-
-      if (status === 422) {
-        toast.error("Unable to complete registration with these credentials..");
+      if (!success) {
+        toast.error(message);
         return;
       }
 
+      setUser(user);
+      toast.success(message);
+      if (onSuccess) onSuccess();
+    } catch {
       toast.error("Failed to create account. Please try again.");
-      
-    } finally { setIsLoading(false) }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return { registerUser, isLoading };

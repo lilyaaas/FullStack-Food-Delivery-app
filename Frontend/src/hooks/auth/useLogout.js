@@ -14,8 +14,7 @@ export const useLogout = () => {
       const { message } = await authService.logout();
       toast.success(message);
     } catch {
-      console.clear();
-      toast.error("An error occurred during logout");
+      toast.error("An error occurred during logout.");
     } finally {
       setUser(null);
       dispatch(clearCart());
