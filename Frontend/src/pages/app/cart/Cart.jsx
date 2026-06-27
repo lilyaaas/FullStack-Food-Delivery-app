@@ -10,7 +10,11 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../../context/AuthContext";
-import { removeItem, incrementQuantity, decrementQuantity } from "../../../redux/slices/cartSlice";
+import {
+  removeItem,
+  incrementQuantity,
+  decrementQuantity,
+} from "../../../redux/slices/cartSlice";
 
 const Cart = () => {
   // Redux state & dispatch
@@ -78,8 +82,15 @@ const Cart = () => {
             return (
               <div
                 key={item.cartItemId}
-                className="bg-surface-container-lowest rounded-xl p-4 sm:p-6 flex flex-row gap-4 sm:gap-6 items-center group transition-all duration-300 hover:shadow-[0_20px_40px_rgba(75,36,9,0.08)] border border-outline-variant/10"
+                className="relative bg-surface-container-lowest rounded-xl p-4 sm:p-6 flex flex-row gap-4 sm:gap-6 items-center group transition-all duration-300 hover:shadow-[0_20px_40px_rgba(75,36,9,0.08)] border border-outline-variant/10"
               >
+                <button
+                  onClick={() => dispatch(removeItem(item.cartItemId))}
+                  className="absolute top-2 right-2 text-on-surface-variant hover:text-red-600 transition-colors p-1 shrink-0 hover:cursor-pointer"
+                  title="Remove item"
+                >
+                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
                 {/* Product Image */}
                 <div className="relative w-24 h-24 sm:w-40 sm:h-40 overflow-visible shrink-0">
                   <img
@@ -91,17 +102,10 @@ const Cart = () => {
 
                 {/* Product Details */}
                 <div className="grow w-full">
-                  <div className="flex justify-between items-start mb-1 sm:mb-2">
+                  <div className="mb-1 sm:mb-2">
                     <h3 className="font-headline text-lg sm:text-xl font-bold text-on-background line-clamp-1 sm:line-clamp-none pr-2">
                       {item.name}
                     </h3>
-                    <button
-                      onClick={() => dispatch(removeItem(item.cartItemId))}
-                      className="text-on-surface-variant hover:text-red-500 transition-colors p-1 shrink-0 hover:cursor-pointer"
-                      title="Remove item"
-                    >
-                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
                   </div>
 
                   {hasCustomizations && (
@@ -147,7 +151,7 @@ const Cart = () => {
                   {/* Price & Controls */}
                   <div className="flex justify-between items-center mt-2 sm:mt-0">
                     <span className="font-headline text-lg sm:text-xl font-extrabold text-primary">
-                      ${item.price.toFixed(2)}
+                      ${parseFloat(item.price).toFixed(2)}
                     </span>
 
                     <div className="flex items-center bg-surface-container-low rounded-full px-1 sm:px-2 py-1 border border-outline-variant/20">

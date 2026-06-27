@@ -114,7 +114,7 @@ const Explore = () => {
     { id: "Promo", label: "Has Offers" },
     { id: "Healthy", label: "Healthy" },
     { id: "Vegetarian", label: "Vegetarian" },
-    { id: "Fast", label: "Under 30 mins" },
+    { id: "Fast", label: "Under 15 mins" },
   ];
 
 
@@ -133,7 +133,7 @@ const Explore = () => {
   };
 
   return (
-    <main className="grow pt-28 pb-20 max-w-7xl mx-auto px-6 w-full font-body min-h-screen">
+    <main className="grow pt-28 pb-20 mx-auto px-6 2xl:px-24 w-full font-body min-h-screen">
       {/* HEADER & SEARCH */}
       <header className="md:bg-surface-container-low rounded-2xl p-6 md:p-8 md:mb-12 mb-5 md:border border-outline-variant/10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
