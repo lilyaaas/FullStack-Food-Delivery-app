@@ -7,15 +7,20 @@ import {
   MonitorSmartphone,
   Laptop,
   Smartphone,
+  Loader2
 } from "lucide-react";
 
 import { ToggleRow } from "../../../../components";
+import { useSettings } from "../../../../hooks/useSettings";
 
 const Security = () => {
+  const { updatePassword, isSaving } = useSettings();
+
   // UI States
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+
 
   // Form State
   const [formData, setFormData] = useState({
@@ -26,6 +31,19 @@ const Security = () => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const onSuccess = () => {
+      setFormData({
+        currentPassword: "",
+        newPassword: "",
+      });
+    };
+    
+    await updatePassword(formData, onSuccess);
+  }
 
   return (
     <section className="bg-surface-container-lowest rounded-3xl p-4 md:p-8 xl:p-12 shadow-sm overflow-hidden border border-outline-variant/10 min-h-100">
@@ -116,9 +134,17 @@ const Security = () => {
 
             <button
               type="button"
-              className="mt-6 bg-linear-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-base px-8 py-3.5 rounded-full shadow-lg shadow-primary/20 active:scale-95 transition-all duration-300 cursor-pointer"
+              disabled={isSaving}
+              className={`mt-6 bg-linear-to-br from-primary to-primary-container text-on-primary font-headline font-bold px-8 py-3.5 mb-3 rounded-full flex items-center justify-center gap-2 disabled:opacity-70 ${isSaving ? "cursor-not-allowed" : "cursor-pointer active:scale-96 shadow-lg shadow-primary/20 transition-all"}`}
+              onClick={handleSubmit}
             >
-              Update Password
+              {isSaving ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" /> updating ...
+              </>
+            ) : (
+                "Update Password"
+            )}
             </button>
           </form>
         </div>
