@@ -3,9 +3,11 @@ import { User, Phone, Mail, Loader2, Save } from "lucide-react";
 
 import { useAuth } from "../../../../context/AuthContext";
 import { InputField } from "../../../../components/index";
+import { useSettings } from "../../../../hooks/useSettings";
 
 const ProfileSettings = () => {
   const { user } = useAuth();
+  const { updateProfile, isSaving } = useSettings();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -16,6 +18,21 @@ const ProfileSettings = () => {
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const onSuccess = (user) => {
+      setFormData({
+        name: user.name || "",
+        phone: user.phone || "",
+        email: user.email || "",
+      });
+    };
+
+    // Pass the data and the success callback to the hook
+    await updateProfile(formData, onSuccess);
   };
 
   return (
@@ -30,19 +47,23 @@ const ProfileSettings = () => {
           </p>
         </header>
 
-        <form className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-12 xl:px-10">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-12 xl:px-10"
+        >
           <InputField
             icon={User}
-            label="Full Name"
-            name="fullName"
+            label="New Name"
+            name="name"
             value={formData.name}
             onChange={handleInputChange}
+            placeholder="John Doe"
             type="text"
           />
 
           <InputField
             icon={Phone}
-            label="Phone Number"
+            label="New Phone Number"
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
@@ -53,21 +74,29 @@ const ProfileSettings = () => {
           <div className="lg:col-span-2">
             <InputField
               icon={Mail}
-              label="Email Address"
+              label="New Email Address"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              placeholder="example@abc.def"
               type="email"
             />
           </div>
 
           <button
             type="submit"
-            className={`bg-linear-to-br from-primary to-primary-container text-on-primary font-headline font-bold py-3 mt-6 mb-3 xl:mt-0 rounded-full flex items-center justify-center gap-2 disabled:opacity-70 w-1/2 lg:w-auto xl:w-2/3 cursor-pointer active:scale-96 shadow-lg shadow-primary/20 transition-all`}
+            disabled={isSaving}
+            className={`bg-linear-to-br from-primary to-primary-container text-on-primary font-headline font-bold py-3 mt-6 mb-3 xl:mt-0 rounded-full flex items-center justify-center gap-2 disabled:opacity-70 w-1/2 lg:w-auto xl:w-2/3 ${isSaving ? "cursor-not-allowed" : "cursor-pointer active:scale-96 shadow-lg shadow-primary/20 transition-all"}`}
           >
-            <span className="flex items-center gap-2">
-              <Save className="w-5 h-5" /> Save Changes
-            </span>
+            {isSaving ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" /> Saving .....
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5" /> Save Changes
+              </>
+            )}
           </button>
         </form>
       </div>
