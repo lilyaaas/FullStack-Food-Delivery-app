@@ -21,9 +21,10 @@ const Login = () => {
   // Form Submission Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const onSuccess = () => {
-      const from = location.state?.from || location.state?.from?.pathname || '/';
+      const from =
+        location.state?.from || location.state?.from?.pathname || "/";
       navigate(from, { replace: true });
     };
 
@@ -115,7 +116,11 @@ const Login = () => {
           </motion.div>
 
           {/* Form Container */}
-          <motion.form onSubmit={handleSubmit} className="space-y-6" variants={itemVariants}>
+          <motion.form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+            variants={itemVariants}
+          >
             {/* Email Input */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-on-surface-variant ml-1">
@@ -178,10 +183,10 @@ const Login = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || password.length < 8}
               className={`w-full py-5 bg-linear-to-br from-primary to-primary-container text-on-primary font-bold text-lg rounded-xl shadow-[0_20px_40px_rgba(161,57,0,0.2)] transition-all duration-300 flex items-center justify-center gap-2 ${
-                isLoading 
-                  ? "opacity-70 cursor-not-allowed" 
+                isLoading || password.length < 8
+                  ? "opacity-80 cursor-not-allowed"
                   : "hover:cursor-pointer hover:shadow-[0_25px_50px_rgba(161,57,0,0.3)] active:scale-[0.98]"
               }`}
             >
@@ -192,7 +197,7 @@ const Login = () => {
                 </>
               ) : (
                 <>
-                  Sign In 
+                  Sign In
                   <ArrowRight className="w-6 h-6" />
                 </>
               )}
