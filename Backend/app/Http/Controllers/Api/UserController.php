@@ -66,6 +66,7 @@ class UserController extends Controller
         // 3. Update Basic Info
         if ($request->has('name')) $user->name = $request->name;
         if ($request->has('phone')) $user->phone = $request->phone;
+        if ($request->has('email')) $user->email = $request->email;
 
         $user->save();
 
