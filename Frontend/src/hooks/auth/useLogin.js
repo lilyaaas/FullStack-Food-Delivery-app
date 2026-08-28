@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import { authService } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
@@ -7,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const login = async (credentials, onSuccess) => {
     setIsLoading(true);
@@ -21,7 +23,12 @@ export const useLogin = () => {
 
       setUser(user);
       toast.success(message);
-      if (onSuccess) onSuccess();
+
+      if (user.role === "restaurant_owner") {
+        navigate("/restaurant-owner/dashboard");
+      } else if (user.role === "customer") {
+        if (onSuccess) onSuccess();
+      }
     } catch {
       toast.error("Server error. Please try again later.");
     } finally {
