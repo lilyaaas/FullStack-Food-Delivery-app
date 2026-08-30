@@ -1,7 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./ProtectedRoute";
-import { MainLayout, AuthLayout } from "../layouts/index";
+import {
+  MainLayout,
+  AuthLayout,
+  RestaurantOwnerLayout,
+} from "../layouts/index";
 import { Login, Register } from "../pages/auth/index";
 import Home from "../pages/public/Home";
 import Cart from "../pages/app/cart/Cart";
@@ -18,11 +22,13 @@ const AppRoutes = () => {
   return (
     <div className="selection:bg-primary-container selection:text-on-primary-container">
       <Routes>
+        {/* Auth Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
 
+        {/* Customer / Public Routes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/cart" element={<Cart />} />
@@ -31,13 +37,18 @@ const AppRoutes = () => {
           <Route path="/restaurant/:id" element={<RestaurantMenu />} />
           <Route path="/food/:id" element={<FoodPage />} />
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
+          {/* Protected Customer Routes */}
+          <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-success/:id" element={<OrderSuccess />} />
             <Route path="/orders" element={<OrderHistory />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
+        </Route>
+
+        {/* Protected Restaurant Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["restaurant_owner"]} />}>
+          <Route element={<RestaurantOwnerLayout />}></Route>
         </Route>
       </Routes>
     </div>
