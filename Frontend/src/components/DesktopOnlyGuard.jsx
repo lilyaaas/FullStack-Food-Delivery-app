@@ -4,12 +4,12 @@ const DesktopOnlyGuard = ({ children }) => {
   return (
     <>
       {/* Allowed on Large Screens (Tablets / Desktops) */}
-      <div className="hidden xl:block">
+      <div className="hidden lg:block">
         {children}
       </div>
 
       {/* Blocked on Small Screens (Phones) */}
-      <div className="xl:hidden flex flex-col items-center justify-center min-h-screen p-8 text-center bg-background selection:bg-primary/20">
+      <div className="lg:hidden flex flex-col items-center justify-center min-h-screen p-8 text-center bg-background selection:bg-primary/20">
         <div className="w-24 h-24 bg-error/10 rounded-full flex items-center justify-center text-error mb-6 shadow-inner border border-error/20">
           <MonitorSmartphone className="w-12 h-12" />
         </div>
