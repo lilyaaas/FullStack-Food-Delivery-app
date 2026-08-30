@@ -12,7 +12,7 @@ function App() {
       <BrowserRouter>
         <AppRoutes />
         <ScrollToTopOnNavigate />
-        <Toaster position="bottom-right" reverseOrder={false} />
+        <Toaster position="top-right" reverseOrder={false} />
       </BrowserRouter>
     </AuthProvider>
   );
