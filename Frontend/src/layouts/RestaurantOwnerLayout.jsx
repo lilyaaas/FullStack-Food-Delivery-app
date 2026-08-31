@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
   ConciergeBell,
@@ -11,13 +11,16 @@ import {
   UserCog,
   Megaphone,
   Menu,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 import { DesktopOnlyGuard } from "../components/index";
+import { useAuth } from "../context/AuthContext";
 
 const RestaurantOwnerLayout = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const location = useLocation();
+  const { user } = useAuth();
 
   // Sidebar Links
   const sideNavLinks = [
@@ -74,14 +77,14 @@ const RestaurantOwnerLayout = () => {
         {/* SIDEBAR NAVIGATION (Collapsible)*/}
         <nav
           className={`bg-surface-container-lowest dark:bg-surface-container h-screen fixed left-0 top-0 flex flex-col shadow-[20px_0_40px_rgba(75,36,9,0.04)] z-50 transition-all duration-300 ease-in-out ${
-            isExpanded ? "w-74" : "w-12"
+            isExpanded ? "lg:w-65 2xl:w-75" : "w-12"
           }`}
         >
           {/* Hamburger Toggle */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="mt-8 mb-22 ml-2 w-min p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors shrink-0 cursor-pointer"
-            title={isExpanded ? "Expand menu" : "Collapse menu"}
+            title={isExpanded ? "Collapse menu" : "Expand menu"}
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -102,10 +105,12 @@ const RestaurantOwnerLayout = () => {
                         : "text-on-surface-variant hover:bg-surface-container-high transition-colors"
                     }`}
                   >
-                    <link.icon className={`w-5 h-5 shrink-0`} />
+                    <link.icon className="w-5 h-5 shrink-0" />
                     <span
                       className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                        isExpanded ? " opacity-100 ml-4" : "w-0 opacity-0 ml-0"
+                        isExpanded
+                          ? "w-auto opacity-100 ml-4"
+                          : "w-0 opacity-0 ml-0"
                       }`}
                     >
                       {link.label}
@@ -115,7 +120,62 @@ const RestaurantOwnerLayout = () => {
               );
             })}
           </ul>
+
+          {/* BOTTOM PROFILE WIDGET */}
+          <div
+            className={`relative mt-auto mx-2 mb-3 transition-all duration-500 ease-in-out ${
+              isExpanded ? "h-12" : "h-20"
+            }`}
+          >
+            {/* Avatar & Text Group */}
+            <div
+              className={`absolute flex items-center overflow-hidden transition-all duration-500 ease-in-out ${
+                isExpanded ? "top-2" : "top-10"
+              }`}
+            >
+              <img
+                src={
+                  user?.avatar ||
+                  `https://ui-avatars.com/api/?name=${user?.name || "U"}&background=ff793e&color=fff`
+                }
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover shadow-sm shrink-0 cursor-pointer hover:scale-105 transition-transform"
+              />
+
+              <div
+                className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${
+                  isExpanded ? "w-40 opacity-100 ml-2" : "w-0 opacity-0 ml-0"
+                }`}
+              >
+                <span className="font-headline font-bold text-sm text-on-surface truncate leading-tight">
+                  {user.name}
+                </span>
+                <span className="font-body text-[10px] font-bold text-on-surface-variant truncate uppercase tracking-wider">
+                  {user?.role ? user.role.replace("_", " ") : "Manager"}
+                </span>
+              </div>
+            </div>
+
+            {/* Settings Icon */}
+            <button
+              title="Settings"
+              className={`absolute text-on-surface-variant hover:text-primary transition-all duration-500 ease-in-out shrink-0 cursor-pointer ${
+                isExpanded ? "left-[calc(100%-32px)] top-3.5" : "left-1.5 top-1"
+              }`}
+            >
+              <SettingsIcon className="w-5 h-5" />
+            </button>
+          </div>
         </nav>
+
+        {/* MAIN CONTENT */}
+        <main
+          className={`pt-8 pr-5 mx-auto w-full min-h-screen transition-all duration-300 ${
+            isExpanded ? "lg:pl-75 2xl:pl-83" : "pl-20"
+          }`}
+        >
+          <Outlet />
+        </main>
       </div>
     </DesktopOnlyGuard>
   );
