@@ -11,6 +11,7 @@ import {
   UserCog,
   Megaphone,
   Menu,
+  X,
   Settings as SettingsIcon,
 } from "lucide-react";
 
@@ -80,14 +81,34 @@ const RestaurantOwnerLayout = () => {
             isExpanded ? "lg:w-65 2xl:w-75" : "w-12"
           }`}
         >
-          {/* Hamburger Toggle */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-8 mb-22 ml-2 w-min p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors shrink-0 cursor-pointer"
-            title={isExpanded ? "Collapse menu" : "Expand menu"}
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          {/* Hamburger/Close Toggle */}
+          <div className="mt-8 mb-22 flex">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={`ml-2 relative p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-all duration-300 ease-in-out shrink-0 cursor-pointer flex items-center justify-center w-8 h-8 ${
+                isExpanded ? "lg:translate-x-52 2xl:translate-x-63" : "translate-x-0"
+              }`}
+              title={isExpanded ? "Collapse menu" : "Expand menu"}
+            >
+              {/* Menu Icon */}
+              <Menu
+                className={`absolute w-5 h-5 transition-all duration-300 ease-in-out ${
+                  isExpanded
+                    ? "opacity-0"
+                    : "opacity-100"
+                }`}
+              />
+
+              {/* X Icon */}
+              <X
+                className={`absolute w-5 h-5 transition-all duration-300 ease-in-out ${
+                  isExpanded
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+            </button>
+          </div>
 
           {/* Links of Side Bar */}
           <ul className="space-y-2 flex-1 overflow-x-hidden">
@@ -99,18 +120,18 @@ const RestaurantOwnerLayout = () => {
                   <NavLink
                     to={link.to}
                     title={isExpanded ? "" : link.label}
-                    className={`mb-4 mx-2 p-1.5 flex items-center font-body font-bold rounded-xl transition-all cursor-pointer ${
+                    className={`mb-4 mx-2 p-1.5 flex items-center font-body font-bold rounded-xl transition-colors duration-100 cursor-pointer ${
                       isActive
                         ? "bg-primary-container text-on-primary-container"
-                        : "text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                        : "text-on-surface-variant hover:bg-surface-container-high"
                     }`}
                   >
                     <link.icon className="w-5 h-5 shrink-0" />
                     <span
-                      className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                      className={`whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out ${
                         isExpanded
-                          ? "w-auto opacity-100 ml-4"
-                          : "w-0 opacity-0 ml-0"
+                          ? "w-40 opacity-100 ml-4 translate-x-0"
+                          : "w-0 opacity-0 ml-0 -translate-x-4"
                       }`}
                     >
                       {link.label}
