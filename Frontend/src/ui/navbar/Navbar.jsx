@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 import { DesktopMenu, MobileMenu } from "../index"
 import { useAuth } from "../../context/AuthContext";
+import QuickFoodLogo from "../../components/QuickFoodLogo";
 
 const Navbar = () => {
   // State and Hooks stay in the Parent
@@ -13,13 +14,14 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl shadow-sm font-body">
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+      <div className="flex justify-between items-center mx-auto px-6 2xl:px-70 h-20">
         {/* Brand Logo */}
         <Link
           to="/"
           onClick={() => setIsMobileMenuOpen(false)}
-          className="lg:text-4xl text-2xl font-extrabold text-primary tracking-tighter hover:scale-103 transition-transform duration-300"
+          className="flex gap-2 lg:text-4xl text-2xl font-extrabold text-primary tracking-tighter hover:scale-103 transition-transform duration-300"
         >
+          <QuickFoodLogo />
           QuickFood
         </Link>
 
