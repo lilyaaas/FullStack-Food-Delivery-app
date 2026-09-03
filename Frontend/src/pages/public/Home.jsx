@@ -6,7 +6,7 @@ const Home = () => {
     <div className="bg-background text-on-background antialiased font-body">
       {/* HERO SECTION */}
       <section className="relative min-h-230.25 flex items-center overflow-hidden pt-12">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 items-center">
+        <div className="mx-auto px-6 2xl:px-40 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 items-center">
           {/* Left Column: Content */}
           <div className="z-10 order-2 lg:order-1">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-high text-primary font-bold text-sm mb-6">
@@ -135,7 +135,7 @@ const Home = () => {
       </section>
 
       {/* CATEGORY BENTO GRID */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
+      <section className="mx-auto px-6 2xl:px-24 w-full py-24">
         <div className="flex items-end justify-between mb-12">
           <div>
             <h2 className="text-4xl font-black font-headline text-on-background tracking-tight mb-2">

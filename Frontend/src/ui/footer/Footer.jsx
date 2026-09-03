@@ -4,7 +4,7 @@ import { Share2, Globe, MessageCircle } from "lucide-react";
 const Footer = () => {
   return (
     <footer className="bg-surface-container-low w-full py-12 font-body mt-auto">
-      <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="mx-auto px-6 2xl:px-70 grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Brand & Socials */}
         <div className="space-y-6">
           <div className="text-2xl font-black text-primary">
