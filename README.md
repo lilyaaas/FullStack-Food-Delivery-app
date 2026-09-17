@@ -1,190 +1,98 @@
 # QuickFood
 
-A full-stack food delivery application built with Laravel and React. QuickFood allows users to browse restaurants, view menus, place orders, and manage deliveries efficiently.
+> A full-stack food ordering platform built with Laravel and React. QuickFood
+> helps users discover restaurants, browse menus, place orders, and manage their
+> profiles.
+
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-19-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=flat&logo=vite&logoColor=white)
 
 ## 🎯 Features
 
-- **Restaurant Management**: Browse and view restaurant details, menus, and delivery information
-- **Product Catalog**: Browse products by category with detailed information
-- **User Authentication**: Secure registration and login system
-- **Order Management**: Place orders, track order status, and manage order history
-- **User Profiles**: Manage user account settings and preferences
-- **Menu Organization**: Categories and products organized by restaurant
-- **Order Tracking**: Real-time order status updates
+- **Restaurant discovery**: Browse restaurants, categories, and menus.
+- **Product catalog**: View menu items with details and pricing.
+- **Authentication**: Register, log in, manage profiles, and log out.
+- **Order management**: Place orders, view order history, and track status.
+- **Restaurant tools**: Create restaurants, categories, and products.
 
 ## 🛠️ Tech Stack
 
-### Backend
+### Backend API (`/Backend`)
 
-- **Framework**: Laravel 11
-- **Language**: PHP
-- **Database**: MySQL
-- **Package Manager**: Composer
-- **Build Tool**: Vite
-- **Testing**: Pest PHP
-- **Authentication**: Sanctum (API tokens)
+- **Framework**: Laravel 12
+- **Language**: PHP 8.2+
+- **Authentication**: Laravel Sanctum
+- **Database**: Laravel-supported database configured through `.env`
 
-### Frontend
+### Frontend SPA (`/Frontend`)
 
-- **Framework**: React 18
-- **Build Tool**: Vite
-- **State Management**: Redux
-- **Package Manager**: npm
-- **Styling**: CSS
+- **Framework**: React 19
+- **Build tool**: Vite 7
+- **State management**: Redux Toolkit
+- **HTTP client**: Axios
+- **Routing**: React Router
 
-## 📁 Project Structure
+## 📁 Project Architecture
 
-```
+```text
 QuickFood/
-├── Backend/                    # Laravel API backend
+├── Backend/                    # Laravel REST API
 │   ├── app/
-│   │   ├── Http/Controllers/  # API controllers
-│   │   └── Models/            # Eloquent models
+│   │   ├── Http/Controllers/   # API endpoint logic
+│   │   └── Models/             # Eloquent models
 │   ├── database/
-│   │   ├── migrations/        # Database migrations
-│   │   ├── factories/         # Model factories
-│   │   └── seeders/           # Database seeders
-│   ├── routes/
-│   │   └── api.php            # API routes
-│   ├── config/                # Configuration files
-│   └── public/                # Public directory
+│   │   ├── migrations/         # Database schema
+│   │   └── seeders/            # Initial data
+│   └── routes/api.php          # API routes
 │
-├── Frontend/                   # React frontend
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   ├── pages/             # Page components
-│   │   ├── layouts/           # Layout components
-│   │   ├── api/               # API service calls
-│   │   ├── redux/             # Redux store configuration
-│   │   └── index.css          # Global styles
-│   └── public/                # Static assets
+└── Frontend/                  # React single-page application
+	├── src/
+	│   ├── api/               # API services
+	│   ├── components/        # Reusable UI components
+	│   ├── pages/             # Application pages
+	│   ├── redux/             # Global state
+	│   └── routes/            # Frontend routes
+	└── package.json
 ```
 
-## 🗄️ Database Models
+## 🗄️ Core Models
 
-- **User**: Application users and restaurant owners
-- **Restaurant**: Restaurant information and metadata
-- **Category**: Product categories within restaurants
-- **Product**: Menu items/products
-- **Order**: Customer orders
-- **OrderItem**: Individual items within orders
+- `User`: Authentication and profile data.
+- `Restaurant`: Restaurant information and ownership.
+- `Category`: Groups products within a restaurant.
+- `Product`: Menu items and pricing.
+- `Order` and `OrderItem`: Customer orders and their items.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- PHP (v8.2 or higher)
+- PHP 8.2 or newer
 - Composer
-- MySQL
+- Node.js and npm
 
-### Backend Setup
-
-1. Navigate to the Backend directory:
+### 1. Backend Setup
 
 ```bash
 cd Backend
-```
-
-2. Install dependencies:
-
-```bash
 composer install
-```
-
-3. Copy the environment file:
-
-```bash
 cp .env.example .env
-```
-
-4. Generate application key:
-
-```bash
 php artisan key:generate
-```
-
-5. Create database and run migrations:
-
-```bash
 php artisan migrate
-```
-
-6. Seed the database (optional):
-
-```bash
-php artisan db:seed
-```
-
-7. Start the development server:
-
-```bash
 php artisan serve
 ```
 
-The backend will be available at `http://localhost:8000`
+The API runs at `http://localhost:8000`.
 
-### Frontend Setup
+### 2. Frontend Setup
 
-1. Navigate to the Frontend directory:
+Open a second terminal:
 
 ```bash
 cd Frontend
-```
-
-2. Install dependencies:
-
-```bash
 npm install
-```
-
-3. Start the development server:
-
-```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173` (or as shown in the terminal)
-
-## 📝 Development Guidelines
-
-- Follow PSR-12 coding standards for PHP
-- Use meaningful commit messages
-- Create feature branches for new features
-- Ensure all tests pass before committing
-- Update documentation when adding new features
-
-## 📦 Dependencies
-
-### Backend Key Dependencies
-
-- Laravel Framework
-- Illuminate components
-- PHPUnit / Pest for testing
-- Monaco for code documentation
-
-### Frontend Key Dependencies
-
-- React
-- Redux
-- Vite
-- ESLint for code quality
-
-## 🤝 Contributing
-
-1. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-2. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-3. Push to the branch (`git push origin feature/AmazingFeature`)
-4. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 📧 Support
-
-For support, please contact the development team or create an issue in the repository.
-
----
-
-**Last Updated**: February 2026
+Vite will display the frontend URL in the terminal.
