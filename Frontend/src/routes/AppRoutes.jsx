@@ -17,6 +17,7 @@ import FoodPage from "../pages/app/food/FoodPage";
 import OrderSuccess from "../pages/app/order/OrderSuccess";
 import OrderHistory from "../pages/app/order/OrderHistory";
 import Settings from "../pages/app/settings/user/Settings";
+import NotFound from "../pages/public/NotFound";
 
 const AppRoutes = () => {
   return (
@@ -50,6 +51,8 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute allowedRoles={["restaurant_owner"]} />}>
           <Route element={<RestaurantOwnerLayout />}></Route>
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
